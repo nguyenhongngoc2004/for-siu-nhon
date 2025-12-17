@@ -86,7 +86,7 @@
         // ==========================================
         // 1. RESOURCES CONFIG Vandiep
         // ==========================================
-        const MUSIC_URL = "./audio.mp3";
+        const MUSIC_URL = "./Mê Ry Chí Mớt/audio.mp3";
         let bgMusic = new Audio(MUSIC_URL);
         bgMusic.loop = true; bgMusic.volume = 1.0;
 
@@ -98,10 +98,22 @@
   './Mê Ry Chí Mớt/image4.jpeg',
   './Mê Ry Chí Mớt/image5.jpeg'
 ];
-
 const photoTextures = [];
+let loadedCount = 0;
+
 photoFiles.forEach((f, i) => {
-  photoTextures[i] = loader.load(f);
+  loader.load(
+    f,
+    (tex) => {
+      photoTextures[i] = tex;
+      loadedCount++;
+
+      // 👉 CHỈ khi load xong hết ảnh mới khởi tạo 3D
+      if (loadedCount === photoFiles.length) {
+        init3D();
+      }
+    }
+  );
 });
         function createCustomTexture(type) {
             const canvas = document.createElement('canvas');
@@ -273,23 +285,41 @@ photoFiles.forEach((f, i) => {
             return points;
         }
 
-        function createPhotos() {
-            const geo = new THREE.PlaneGeometry(8, 8);
-            const borderGeo = new THREE.PlaneGeometry(9, 9); 
-            const borderMat = new THREE.MeshBasicMaterial({ color: 0xFFD700 }); 
+ function createPhotos() {
+  const geo = new THREE.PlaneGeometry(8, 8);
+  const borderGeo = new THREE.PlaneGeometry(9, 9);
+  const borderMat = new THREE.MeshBasicMaterial({
+    color: 0xFFD700,
+    transparent: true,
+    opacity: 0.9
+  });
 
-            for(let i=0; i<5; i++) {
-                const mat = new THREE.MeshBasicMaterial({ map: photoTextures[i], side: THREE.DoubleSide });
-                const mesh = new THREE.Mesh(geo, mat);
-                const border = new THREE.Mesh(borderGeo, borderMat);
-                border.position.z = -0.1; 
-                mesh.add(border);
-                mesh.visible = false; mesh.scale.set(0,0,0);
-                scene.add(mesh);
-                photoMeshes.push(mesh);
-            }
-        }
+  for (let i = 0; i < photoFiles.length; i++) {
+    const mat = new THREE.MeshBasicMaterial({
+      map: photoTextures[i],
+      side: THREE.DoubleSide,
+      transparent: true
+    });
 
+    const mesh = new THREE.Mesh(geo, mat);
+
+    const border = new THREE.Mesh(borderGeo, borderMat);
+    border.position.z = 0.01;
+    mesh.add(border);
+
+    mesh.position.set(
+      Math.cos(i * Math.PI * 2 / photoFiles.length) * CONFIG.photoOrbitRadius,
+      0,
+      Math.sin(i * Math.PI * 2 / photoFiles.length) * CONFIG.photoOrbitRadius
+    );
+
+    mesh.visible = false;
+    mesh.scale.set(0, 0, 0);
+
+    scene.add(mesh);
+    photoMeshes.push(mesh);
+  }
+}
         function createDecorations() {
             // MERRY CHRISTMAS Vandiep
             const canvas = document.createElement('canvas');
