@@ -91,10 +91,18 @@
         bgMusic.loop = true; bgMusic.volume = 1.0;
 
         const loader = new THREE.TextureLoader();
-        const photoFiles = ['./image1.jpeg', './image2.jpeg', './image3.jpeg', './image4.jpeg', './image5.jpeg'];
-        const photoTextures = [];
-        photoFiles.forEach((f, i) => photoTextures[i] = loader.load(f));
+       const photoFiles = [
+  './Mê Ry Chí Mớt/image1.jpeg',
+  './Mê Ry Chí Mớt/image2.jpeg',
+  './Mê Ry Chí Mớt/image3.jpeg',
+  './Mê Ry Chí Mớt/image4.jpeg',
+  './Mê Ry Chí Mớt/image5.jpeg'
+];
 
+const photoTextures = [];
+photoFiles.forEach((f, i) => {
+  photoTextures[i] = loader.load(f);
+});
         function createCustomTexture(type) {
             const canvas = document.createElement('canvas');
             canvas.width = 128; canvas.height = 128;
